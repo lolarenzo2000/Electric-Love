@@ -323,9 +323,13 @@ const PALS = [
 // Se genera el panel desde UI para mantener juntos los controles y sus parámetros.
 const ui = document.getElementById("ui"),
   ctl = {};
-document.getElementById("tg").onclick = () => ui.classList.toggle("h");
+function toggleHud() {
+  const hidden = ui.classList.toggle("h");
+  document.body.classList.toggle("hud-hidden", hidden);
+}
+document.getElementById("tg").onclick = toggleHud;
 let html =
-  '<h1>Electric Love</h1><div class="sub">Máquina de patrones · atajos: 1-8 escenas, C/Shift+C colores, Espacio pulso, B rayo, M sembrar, N descarga, H ocultar</div><h2>Escenas</h2><div class="g" id="sc"></div><div class="g" style="margin-top:4px"><button id="pulse">⚡ Pulso</button><button id="rst">Reiniciar</button></div><h2>Color</h2><div class="g" id="pals">' +
+  '<h1>Electric Love</h1><div class="sub">Atajos: 1-8 escenas, C/Shift+C colores, A música, Espacio pulso, B rayo, M sembrar, N descarga, H ocultar HUD</div><h2>Escenas</h2><div class="g" id="sc"></div><div class="g" style="margin-top:4px"><button id="pulse">⚡ Pulso</button><button id="rst">Reiniciar</button></div><h2>Color</h2><div class="g" id="pals">' +
   PALS.map(
     (p, i) =>
       `<button class="pb" data-p="${i}"><span class="sw">${p[1].map((c) => `<i style="background:${c}"></i>`).join("")}</span>${p[0]}</button>`,
@@ -346,12 +350,33 @@ UI.forEach(([t, items]) => {
   });
 });
 html +=
-  '<h2>Música</h2><div class="music"><audio id="music" src="assets/music.mp3" controls loop preload="metadata">Tu navegador no admite audio HTML.</audio><label class="music-picker">Elegir archivo de audio<input id="musicFile" type="file" accept="audio/*"></label></div>';
+  '<h2>Música</h2><div class="music"><audio id="music" src="assets/music.mp3" loop preload="metadata"></audio><span class="music-status" id="musicStatus" role="status">Pulsa A para reproducir o pausar</span><label class="music-volume" for="musicVolume">Volumen<input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.7"></label><label class="music-picker">Elegir archivo de audio<input id="musicFile" type="file" accept="audio/*"></label></div>';
 html +=
-  '<div class="hint">Clic = atrae · Shift+clic = repele · Rueda = zoom · M siembra micelio · C/Shift+C cambia color</div>';
+  '<div class="hint">Clic = atrae · Shift+clic = repele · Rueda = zoom · M siembra micelio · A reproduce o pausa la música</div>';
 ui.innerHTML = html;
 const musicPlayer = document.getElementById("music");
+const musicStatus = document.getElementById("musicStatus");
 let previewMusicUrl;
+musicPlayer.volume = 0.7;
+document.getElementById("musicVolume").addEventListener("input", (event) => {
+  musicPlayer.volume = Number(event.target.value);
+});
+function toggleMusic() {
+  if (!musicPlayer.paused) {
+    musicPlayer.pause();
+    return;
+  }
+  musicPlayer.play().catch(() => {
+    musicStatus.textContent =
+      "No se pudo cargar. Añade assets/music.mp3 o elige un archivo.";
+  });
+}
+musicPlayer.addEventListener("play", () => {
+  musicStatus.textContent = "Reproduciendo · pulsa A para pausar";
+});
+musicPlayer.addEventListener("pause", () => {
+  musicStatus.textContent = "En pausa · pulsa A para reproducir";
+});
 document.getElementById("musicFile").addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (!file) return;
@@ -359,6 +384,7 @@ document.getElementById("musicFile").addEventListener("change", (event) => {
   previewMusicUrl = URL.createObjectURL(file);
   musicPlayer.src = previewMusicUrl;
   musicPlayer.load();
+  musicStatus.textContent = `${file.name} · pulsa A para reproducir`;
 });
 const sc = document.getElementById("sc");
 SCENES.forEach((s, i) => {
@@ -417,11 +443,12 @@ document.querySelectorAll(".pb").forEach(
 );
 document.getElementById("pulse").onclick = pulse;
 addEventListener("keydown", (e) => {
-  if (e.key == "h" || e.key == "H") ui.classList.toggle("h");
+  if (e.key == "h" || e.key == "H") toggleHud();
   else if (e.code == "Space") {
     e.preventDefault();
     pulse();
-  } else if (e.key.toLowerCase() == "c") {
+  } else if (e.key.toLowerCase() == "a") toggleMusic();
+  else if (e.key.toLowerCase() == "c") {
     P.pal = (P.pal + (e.shiftKey ? -1 : 1) + PALS.length) % PALS.length;
     sync();
   } else if (e.key == "b" || e.key == "B") ACT.fire();

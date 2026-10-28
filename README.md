@@ -16,8 +16,8 @@ Puedes elegir un archivo desde el panel para escucharlo durante la sesión. Para
 que la música esté disponible al publicar el proyecto, coloca una pista MP3 en
 `assets/music.mp3` antes del deploy. El archivo debe formar parte del repositorio
 o de los archivos que publiques; la selección local del panel no se sube al
-servidor. Pulsa reproducir en el control de audio, ya que el navegador no permite
-iniciar música automáticamente sin una interacción del usuario.
+servidor. Pulsa `A` para reproducir o pausar y ajusta el volumen desde el panel.
+La reproducción requiere esa interacción porque el navegador bloquea el autoplay.
 
 ## Cómo leer el código
 
@@ -29,4 +29,5 @@ crecen y los segmentos que forman la red.
 
 Los comentarios del código explican los algoritmos y los datos que necesitan
 contexto. En el panel puedes elegir una escena con las teclas `1` a `8`, pulsar
-`Espacio` para el pulso, usar `B` para disparar un rayo y `H` para ocultar el panel.
+`Espacio` para el pulso, usar `B` para disparar un rayo, `A` para la música y `H`
+para ocultar el HUD y el botón hamburguesa.

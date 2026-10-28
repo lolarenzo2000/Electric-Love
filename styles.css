@@ -52,6 +52,9 @@ canvas {
 #ui.h {
   display: none;
 }
+body.hud-hidden #tg {
+  display: none;
+}
 #tg {
   position: fixed;
   z-index: 11;
@@ -131,9 +134,18 @@ button:hover {
   margin: 4px 0;
 }
 .music audio {
-  display: block;
-  width: 100%;
-  height: 36px;
+  display: none;
+}
+.music-status {
+  color: var(--mu);
+  overflow-wrap: anywhere;
+}
+.music-volume {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  align-items: center;
+  gap: 6px;
+  color: var(--mu);
 }
 .music-picker {
   color: var(--mu);
